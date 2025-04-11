@@ -22,7 +22,7 @@ public class PricePage {
     private Integer pageNo;
     private Boolean fetched;
     private String content;
-    private Integer respStatus;
+    private Integer httpStatus;
     private String tableData;
     private Integer pageTotal;
 

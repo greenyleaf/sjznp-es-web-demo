@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @Document(indexName = "price_item")
 public class PriceItem {
     @Id
-    private Long id;
+    private String id;
     @Field(type = FieldType.Keyword)
     private String typeName;
     @MultiField(mainField = @Field(type = FieldType.Text), otherFields = @InnerField(suffix = "key", type = FieldType.Keyword))
