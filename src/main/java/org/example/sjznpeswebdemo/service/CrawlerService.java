@@ -10,7 +10,6 @@ import org.example.sjznpeswebdemo.util.AppUtil;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -26,13 +25,11 @@ public class CrawlerService {
     private final CrawlerManager crawlerManager;
     private final PricePageRepository pricePageRepository;
     private final PriceItemRepository priceItemRepository;
-    private final ConcurrentMapCacheManager cacheManager;
 
-    public CrawlerService(CrawlerManager crawlerManager, PricePageRepository pricePageRepository, PriceItemRepository priceItemRepository, ConcurrentMapCacheManager cacheManager) {
+    public CrawlerService(CrawlerManager crawlerManager, PricePageRepository pricePageRepository, PriceItemRepository priceItemRepository) {
         this.crawlerManager = crawlerManager;
         this.pricePageRepository = pricePageRepository;
         this.priceItemRepository = priceItemRepository;
-        this.cacheManager = cacheManager;
     }
 
     Flux<LocalDate> dateProducer(LocalDate start) {
@@ -80,11 +77,14 @@ public class CrawlerService {
                 .thenMany(priceItemRepository.saveAll(priceItemFlux));
     }
 
-    Mono<Long> crawlTillNow() {
+    Mono<Long> processTillNow() {
         return pricePageRepository.findFirstByOrderByDateDesc()
-                .map(PricePage::getDate)
+                .map(pricePage -> pricePage.getDate().plusDays(1))
                 .switchIfEmpty(Mono.just(AppConstant.INITIAL_DATE))
                 .flatMapMany(this::dateProducer)
+                .doOnNext(date -> {
+                    log.info("stage 3, {}", date);
+                })
                 .flatMapSequential(
                         this::saveByDate,
                         1

@@ -1,9 +1,12 @@
 package org.example.sjznpeswebdemo.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.example.sjznpeswebdemo.repository.PricePageRepository;
+import org.example.sjznpeswebdemo.util.AppConstant;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 
@@ -12,6 +15,8 @@ import java.time.LocalDate;
 class CrawlerServiceTest {
     @Autowired
     private CrawlerService crawlerService;
+    @Autowired
+    private PricePageRepository pricePageRepository;
 
     @Test
     void dateProducerTest() {
@@ -51,5 +56,26 @@ class CrawlerServiceTest {
                 })
                 .blockLast()
         ;
+    }
+
+    @Test
+    void processTillNowTest() {
+        pricePageRepository.findFirstByOrderByDateDesc()
+                .map(pricePage -> pricePage.getDate().plusDays(1))
+                .switchIfEmpty(Mono.just(AppConstant.INITIAL_DATE))
+                .doOnNext(localDate -> {
+                    log.info("localDate, {}", localDate);
+                })
+                .block();
+
+    }
+
+    @Test
+    void processTillNowTest2() {
+        crawlerService.processTillNow()
+                .doOnNext(count -> log.info("count, {}", count))
+                .block()
+        ;
+
     }
 }
