@@ -18,4 +18,6 @@ public interface AppConstant {
             "粮油",
             "肉类"
     );
+
+    String BASE_URL = "https://www.sjznp.com/Home/PriceTrend";
 }

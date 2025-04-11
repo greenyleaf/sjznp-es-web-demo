@@ -3,7 +3,7 @@ package org.example.sjznpeswebdemo.service;
 import lombok.extern.slf4j.Slf4j;
 import org.example.sjznpeswebdemo.entity.PriceItem;
 import org.example.sjznpeswebdemo.entity.PricePage;
-import org.example.sjznpeswebdemo.repository.PricePageRepository;
+import org.example.sjznpeswebdemo.util.AppConstant;
 import org.example.sjznpeswebdemo.util.AppUtil;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -24,12 +24,10 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CrawlerManager {
     private final WebClient webClient;
-    private final PricePageRepository pricePageRepository;
 
-    public CrawlerManager(PricePageRepository pricePageRepository) {
-        this.pricePageRepository = pricePageRepository;
+    public CrawlerManager() {
         this.webClient = WebClient.builder()
-                .baseUrl("https://www.sjznp.com/Home/PriceTrend").build();
+                .baseUrl(AppConstant.BASE_URL).build();
     }
 
     Flux<LocalDate> dateProducer(LocalDate start) {
@@ -100,8 +98,14 @@ public class CrawlerManager {
                                 }));
     }
 
-    Flux<PricePage> crawlByDate(LocalDate date) {
-        Flux<PricePage> pricePageFlux = crawlOnePage(date, 1, null)
+    Flux<PricePage> crawlAllSubPage(LocalDate date, Integer pageCount) {
+        return Flux.range(2, pageCount - 1)
+                .flatMapSequential(integer -> crawlOnePage(date, integer, pageCount), 5);
+    }
+
+    public Flux<PricePage> crawlByDate(LocalDate date) {
+
+        return crawlOnePage(date, 1, null)
                 .doOnNext(pricePage -> {
                     Document document = Jsoup.parse(pricePage.getContent());
                     int pageCount = parsePageCount(document);
@@ -113,13 +117,6 @@ public class CrawlerManager {
                                     .concatWith(crawlAllSubPage(pricePage.getDate(), pricePage.getPageCount()));
                         }
                 );
-
-        return pricePageRepository.saveAll(pricePageFlux);
-    }
-
-    Flux<PricePage> crawlAllSubPage(LocalDate date, Integer pageCount) {
-        return Flux.range(2, pageCount - 1)
-                .flatMapSequential(integer -> crawlOnePage(date, integer, pageCount), 5);
     }
 
 }
