@@ -2,6 +2,7 @@ package org.example.sjznpeswebdemo.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.sjznpeswebdemo.entity.PricePage;
+import org.example.sjznpeswebdemo.repository.PricePageRepository;
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,8 @@ import java.time.LocalDate;
 class CrawlerManagerTest {
     @Autowired
     CrawlerManager crawlerManager;
+    @Autowired
+    private PricePageRepository pricePageRepository;
 
     @Test
     void dateProducerTest() {
@@ -82,5 +85,23 @@ class CrawlerManagerTest {
                 })
                 .blockLast();
 
+    }
+
+    @Test
+    void crawlByDateTest2() {
+        Flux<PricePage> pricePageFlux = crawlerManager.crawlByDate(LocalDate.parse("2025-04-10"));
+
+        pricePageFlux
+                .count()
+                .doOnNext(count -> {
+                    log.info("count, {}", count);
+                })
+                .block();
+    }
+
+    @Test
+    void crawlByDateTest3() {
+        pricePageRepository.saveAll(crawlerManager.crawlByDate(LocalDate.parse("2025-04-10")))
+                .blockLast();
     }
 }

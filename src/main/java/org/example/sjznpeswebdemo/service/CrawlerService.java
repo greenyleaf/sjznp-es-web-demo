@@ -1,0 +1,63 @@
+package org.example.sjznpeswebdemo.service;
+
+import lombok.extern.slf4j.Slf4j;
+import org.example.sjznpeswebdemo.entity.PriceItem;
+import org.example.sjznpeswebdemo.entity.PricePage;
+import org.example.sjznpeswebdemo.repository.PriceItemRepository;
+import org.example.sjznpeswebdemo.repository.PricePageRepository;
+import org.example.sjznpeswebdemo.util.AppUtil;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@Slf4j
+public class CrawlerService {
+    private final CrawlerManager crawlerManager;
+    private final PricePageRepository pricePageRepository;
+    private final PriceItemRepository priceItemRepository;
+
+    public CrawlerService(CrawlerManager crawlerManager, PricePageRepository pricePageRepository, PriceItemRepository priceItemRepository) {
+        this.crawlerManager = crawlerManager;
+        this.pricePageRepository = pricePageRepository;
+        this.priceItemRepository = priceItemRepository;
+    }
+
+    List<PriceItem> extractPriceItems(Document doc) {
+        Element tbody = doc.selectFirst("tbody");
+        // TypeName, ProName, low, min, max, ADate
+        if (tbody != null && tbody.childrenSize() > 0) {
+            // log.info("tbody, \n{}", tbody.html());
+
+            return tbody.children()
+                    .stream()
+                    .map(tr -> tr.children()
+                            .stream()
+                            .map(Element::text)
+                            .collect(Collectors.toList()))
+                    .map(AppUtil::wrapFromList)
+                    .collect(Collectors.toList());
+        }
+        return Collections.emptyList();
+    }
+
+    Flux<PriceItem> crawlByDate(LocalDate date) {
+        Flux<PricePage> pricePageFlux = crawlerManager.crawlByDate(date);
+
+        Flux<PriceItem> priceItemFlux =
+                pricePageFlux
+                        .flatMapSequential(pricePage ->
+                                Flux.fromIterable(extractPriceItems(Jsoup.parse(pricePage.getContent()))));
+
+        return pricePageRepository
+                .saveAll(pricePageFlux)
+                .thenMany(priceItemRepository.saveAll(priceItemFlux));
+    }
+}

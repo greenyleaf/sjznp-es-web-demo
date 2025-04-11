@@ -43,4 +43,12 @@ class PricePageRepositoryTest {
         reactiveElasticsearchOperations.indexOps(PricePage.class).delete()
                 .block();
     }
+
+    @Test
+    void firstTest() {
+        PricePage item = pricePageRepository.findAll()
+                .blockFirst();
+
+        log.info("first: {}", item);
+    }
 }

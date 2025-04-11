@@ -1,0 +1,35 @@
+package org.example.sjznpeswebdemo.service;
+
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import java.time.LocalDate;
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@Slf4j
+class CrawlerServiceTest {
+    @Autowired
+    private CrawlerService crawlerService;
+
+    @Test
+    void crawlByDateTest() {
+        crawlerService.crawlByDate(LocalDate.parse("2025-04-10"))
+                .count()
+                .doOnNext(count -> {
+                    log.info("count, {}", count);
+                })
+                .block();
+    }
+
+    @Test
+    void crawlByDateTest2() {
+        crawlerService.crawlByDate(LocalDate.parse("2025-04-10"))
+                .doOnNext(item -> {
+                    log.info("doOnNext");
+                })
+                .blockLast()
+        ;
+    }
+}

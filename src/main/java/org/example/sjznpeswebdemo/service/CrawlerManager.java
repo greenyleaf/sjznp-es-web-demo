@@ -1,24 +1,18 @@
 package org.example.sjznpeswebdemo.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.example.sjznpeswebdemo.entity.PriceItem;
 import org.example.sjznpeswebdemo.entity.PricePage;
 import org.example.sjznpeswebdemo.util.AppConstant;
-import org.example.sjznpeswebdemo.util.AppUtil;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -58,24 +52,6 @@ public class CrawlerManager {
         return 1;
     }
 
-    List<PriceItem> extractPriceItems(Document doc) {
-        Element tbody = doc.selectFirst("tbody");
-        // TypeName, ProName, low, min, max, ADate
-        if (tbody != null && tbody.childrenSize() > 0) {
-            // log.info("tbody, \n{}", tbody.html());
-
-            return tbody.children()
-                    .stream()
-                    .map(tr -> tr.children()
-                            .stream()
-                            .map(Element::text)
-                            .collect(Collectors.toList()))
-                    .map(AppUtil::wrapFromList)
-                    .collect(Collectors.toList());
-        }
-        return Collections.emptyList();
-    }
-
     Mono<PricePage> crawlOnePage(LocalDate date, Integer pageNo, Integer pageCount) {
         return webClient
                 .get()
@@ -111,11 +87,9 @@ public class CrawlerManager {
                     int pageCount = parsePageCount(document);
                     pricePage.setPageCount(pageCount);
                 })
-                .flatMapMany(pricePage -> {
-                            log.info("pricePage.getPageCount(), {}", pricePage.getPageCount());
-                            return Mono.just(pricePage)
-                                    .concatWith(crawlAllSubPage(pricePage.getDate(), pricePage.getPageCount()));
-                        }
+                .flatMapMany(pricePage ->
+                        Mono.just(pricePage)
+                                .concatWith(crawlAllSubPage(pricePage.getDate(), pricePage.getPageCount()))
                 );
     }
 
