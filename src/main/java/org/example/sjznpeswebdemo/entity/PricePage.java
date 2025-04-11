@@ -23,8 +23,9 @@ public class PricePage {
     private Boolean fetched;
     private String content;
     private Integer httpStatus;
+
     private String tableData;
-    private Integer pageTotal;
+    private Integer pageCount;
 
     @CreatedDate
     private LocalDateTime created;

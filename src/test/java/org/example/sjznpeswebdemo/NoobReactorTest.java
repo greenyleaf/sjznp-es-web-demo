@@ -46,4 +46,19 @@ public class NoobReactorTest {
                 })
                 .block();
     }
+
+    @Test
+    void test3() {
+        Mono.just(1)
+                .doOnNext(integer -> {
+                    log.info("doOnNext 1, {}", integer);
+                })
+                .then()
+                .thenReturn(1)
+                .doOnNext(integer -> {
+                    log.info("doOnNext 2");
+                })
+                .block()
+        ;
+    }
 }

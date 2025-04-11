@@ -12,8 +12,14 @@ class PricePageRepositoryTest {
     PricePageRepository pricePageRepository;
 
     @Test
-    void findAllTest() {
+    void countTest() {
         Long aLong = pricePageRepository.count().block();
         log.info("count: {}", aLong);
+    }
+
+    @Test
+    void deleteAllTest() {
+        pricePageRepository.deleteAll()
+                .block();
     }
 }

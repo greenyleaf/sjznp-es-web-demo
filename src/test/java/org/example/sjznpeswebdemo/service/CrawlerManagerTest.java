@@ -1,23 +1,25 @@
 package org.example.sjznpeswebdemo.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.example.sjznpeswebdemo.entity.PricePage;
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import reactor.core.publisher.Flux;
 
 import java.time.LocalDate;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Slf4j
-class CrawlerServiceTest {
+class CrawlerManagerTest {
     @Autowired
-    CrawlerService crawlerService;
+    CrawlerManager crawlerManager;
 
     @Test
     void dateProducerTest() {
-        crawlerService.dateProducer(LocalDate.parse("2025-02-01"))
+        crawlerManager.dateProducer(LocalDate.parse("2025-02-01"))
                 .doOnNext(localDate -> {
                     log.info("localDate, {}", localDate);
                 })
@@ -26,7 +28,7 @@ class CrawlerServiceTest {
 
     @Test
     void dateProducerTest2() {
-        crawlerService.dateProducer(LocalDate.parse("2025-02-01"))
+        crawlerManager.dateProducer(LocalDate.parse("2025-02-01"))
                 .doOnNext(localDate -> {
                     log.info("localDate, {}", localDate);
                 })
@@ -36,8 +38,8 @@ class CrawlerServiceTest {
     }
 
     @Test
-    void crawlPageTest() {
-        crawlerService.crawlPage(LocalDate.parse("2025-04-10"), 1)
+    void crawlOnePageTest() {
+        crawlerManager.crawlOnePage(LocalDate.parse("2025-04-10"), 1, null)
                 .doOnNext(pricePage -> {
                     log.info("pricePage, {}", pricePage);
                 })
@@ -47,7 +49,7 @@ class CrawlerServiceTest {
 
     @Test
     void parsePageCountTest() {
-        crawlerService.crawlPage(LocalDate.parse("2025-04-10"), 1)
+        crawlerManager.crawlOnePage(LocalDate.parse("2025-04-10"), 1, null)
                 .map(pricePage -> {
                     // log.info("pricePage, {}", pricePage);
 
@@ -62,10 +64,22 @@ class CrawlerServiceTest {
                     String href = elements.attr("href");
                     log.info("href, {}", href);
 
-                    int count = crawlerService.parsePageCount(document);
+                    int count = crawlerManager.parsePageCount(document);
                     log.info("count, {}", count);
                 })
                 .block()
         ;
+    }
+
+    @Test
+    void crawlByDateTest() {
+        Flux<PricePage> pricePageFlux = crawlerManager.crawlByDate(LocalDate.parse("2025-04-10"));
+
+        pricePageFlux.doOnNext(pricePage -> {
+                    log.info("pricePage.getId, {}", pricePage.getId());
+                    log.info("pricePage.getContent.length, {}", pricePage.getContent().length());
+                })
+                .blockLast();
+
     }
 }
