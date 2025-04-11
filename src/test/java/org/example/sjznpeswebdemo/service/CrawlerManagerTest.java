@@ -77,6 +77,7 @@ class CrawlerManagerTest {
 
         pricePageFlux.doOnNext(pricePage -> {
                     log.info("pricePage.getId, {}", pricePage.getId());
+                    log.info("pricePage.getPageCount, {}", pricePage.getPageCount());
                     log.info("pricePage.getContent.length, {}", pricePage.getContent().length());
                 })
                 .blockLast();

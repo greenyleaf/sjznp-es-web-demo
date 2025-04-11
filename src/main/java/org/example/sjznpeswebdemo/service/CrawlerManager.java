@@ -107,15 +107,18 @@ public class CrawlerManager {
                     int pageCount = parsePageCount(document);
                     pricePage.setPageCount(pageCount);
                 })
-                .flatMapMany(pricePage -> Mono.just(pricePage)
-                        .concatWith(crawlAllSubPage(pricePage.getDate(), pricePage.getPageCount()))
+                .flatMapMany(pricePage -> {
+                            log.info("pricePage.getPageCount(), {}", pricePage.getPageCount());
+                            return Mono.just(pricePage)
+                                    .concatWith(crawlAllSubPage(pricePage.getDate(), pricePage.getPageCount()));
+                        }
                 );
 
         return pricePageRepository.saveAll(pricePageFlux);
     }
 
     Flux<PricePage> crawlAllSubPage(LocalDate date, Integer pageCount) {
-        return Flux.range(2, pageCount)
+        return Flux.range(2, pageCount - 1)
                 .flatMapSequential(integer -> crawlOnePage(date, integer, pageCount), 5);
     }
 

@@ -61,4 +61,14 @@ public class NoobReactorTest {
                 .block()
         ;
     }
+
+    @Test
+    void test4() {
+        Flux.range(2, 10 - 1)
+                .doOnNext(integer -> {
+                    log.info("doOnNext, {}", integer);
+                })
+                .blockLast()
+        ;
+    }
 }
