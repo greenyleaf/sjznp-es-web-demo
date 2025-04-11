@@ -51,4 +51,13 @@ class PricePageRepositoryTest {
 
         log.info("first: {}", item);
     }
+
+    @Test
+    void findFirstByOrderByDateDescTest() {
+        PricePage block = pricePageRepository.findFirstByOrderByDateDesc()
+                .doOnNext(pricePage -> log.info("first: {}", pricePage))
+                .block();
+
+        log.info("first: {}", block);
+    }
 }

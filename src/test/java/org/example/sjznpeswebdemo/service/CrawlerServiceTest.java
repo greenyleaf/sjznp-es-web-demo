@@ -34,8 +34,8 @@ class CrawlerServiceTest {
     }
 
     @Test
-    void crawlByDateTest() {
-        crawlerService.crawlByDate(LocalDate.parse("2025-04-10"))
+    void saveByDateTest() {
+        crawlerService.saveByDate(LocalDate.parse("2025-04-10"))
                 .count()
                 .doOnNext(count -> {
                     log.info("count, {}", count);
@@ -44,8 +44,8 @@ class CrawlerServiceTest {
     }
 
     @Test
-    void crawlByDateTest2() {
-        crawlerService.crawlByDate(LocalDate.parse("2025-04-10"))
+    void saveByDateTest2() {
+        crawlerService.saveByDate(LocalDate.parse("2025-04-10"))
                 .doOnNext(item -> {
                     log.info("doOnNext");
                 })

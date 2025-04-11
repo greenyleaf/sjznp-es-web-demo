@@ -5,12 +5,15 @@ import org.example.sjznpeswebdemo.entity.PriceItem;
 import org.example.sjznpeswebdemo.entity.PricePage;
 import org.example.sjznpeswebdemo.repository.PriceItemRepository;
 import org.example.sjznpeswebdemo.repository.PricePageRepository;
+import org.example.sjznpeswebdemo.util.AppConstant;
 import org.example.sjznpeswebdemo.util.AppUtil;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -23,11 +26,13 @@ public class CrawlerService {
     private final CrawlerManager crawlerManager;
     private final PricePageRepository pricePageRepository;
     private final PriceItemRepository priceItemRepository;
+    private final ConcurrentMapCacheManager cacheManager;
 
-    public CrawlerService(CrawlerManager crawlerManager, PricePageRepository pricePageRepository, PriceItemRepository priceItemRepository) {
+    public CrawlerService(CrawlerManager crawlerManager, PricePageRepository pricePageRepository, PriceItemRepository priceItemRepository, ConcurrentMapCacheManager cacheManager) {
         this.crawlerManager = crawlerManager;
         this.pricePageRepository = pricePageRepository;
         this.priceItemRepository = priceItemRepository;
+        this.cacheManager = cacheManager;
     }
 
     Flux<LocalDate> dateProducer(LocalDate start) {
@@ -62,7 +67,7 @@ public class CrawlerService {
         return Collections.emptyList();
     }
 
-    Flux<PriceItem> crawlByDate(LocalDate date) {
+    Flux<PriceItem> saveByDate(LocalDate date) {
         Flux<PricePage> pricePageFlux = crawlerManager.crawlByDate(date);
 
         Flux<PriceItem> priceItemFlux =
@@ -75,7 +80,16 @@ public class CrawlerService {
                 .thenMany(priceItemRepository.saveAll(priceItemFlux));
     }
 
-    void crawlTillNow() {
-
+    Mono<Long> crawlTillNow() {
+        return pricePageRepository.findFirstByOrderByDateDesc()
+                .map(PricePage::getDate)
+                .switchIfEmpty(Mono.just(AppConstant.INITIAL_DATE))
+                .flatMapMany(this::dateProducer)
+                .flatMapSequential(
+                        this::saveByDate,
+                        1
+                )
+                .count()
+                ;
     }
 }
