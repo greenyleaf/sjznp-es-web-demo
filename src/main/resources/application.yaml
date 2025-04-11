@@ -1,0 +1,4 @@
+spring.application.name: sjznp-es-web-demo
+spring:
+  main:
+    web-application-type: none
