@@ -46,7 +46,7 @@ class CrawlerServiceTest {
     }
 
     @Test
-    void extractPageCountTest() {
+    void parsePageCountTest() {
         crawlerService.crawlPage(LocalDate.parse("2025-04-10"), 1)
                 .map(pricePage -> {
                     // log.info("pricePage, {}", pricePage);
@@ -62,8 +62,8 @@ class CrawlerServiceTest {
                     String href = elements.attr("href");
                     log.info("href, {}", href);
 
-                    /*int count = crawlerService.extractPageCount(document);
-                    log.info("count, {}", count);*/
+                    int count = crawlerService.parsePageCount(document);
+                    log.info("count, {}", count);
                 })
                 .block()
         ;

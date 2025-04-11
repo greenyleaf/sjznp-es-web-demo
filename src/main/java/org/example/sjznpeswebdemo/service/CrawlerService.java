@@ -37,7 +37,7 @@ public class CrawlerService {
         return flux;
     }
 
-    int extractPageCount(Document doc) {
+    int parsePageCount(Document doc) {
         String href = doc.select(".page a:last-child").attr("href");
         if (!href.isEmpty()) {
             Pattern pageNoPattern = Pattern.compile("page=(\\d+)");
