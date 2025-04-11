@@ -24,20 +24,6 @@ public class CrawlerManager {
                 .baseUrl(AppConstant.BASE_URL).build();
     }
 
-    Flux<LocalDate> dateProducer(LocalDate start) {
-        Flux<LocalDate> flux = Flux.create(fluxSink -> {
-            LocalDate end = LocalDate.now();
-
-            for (LocalDate d = start; end.isAfter(d) && !fluxSink.isCancelled(); d = d.plusDays(1)) {
-                fluxSink.next(d);
-                log.info("fluxSink.next, {}", d);
-            }
-
-            fluxSink.complete();
-        });
-        return flux;
-    }
-
     int parsePageCount(Document doc) {
         String href = doc.select(".page a:last-child").attr("href");
         if (!href.isEmpty()) {

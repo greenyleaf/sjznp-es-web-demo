@@ -30,6 +30,20 @@ public class CrawlerService {
         this.priceItemRepository = priceItemRepository;
     }
 
+    Flux<LocalDate> dateProducer(LocalDate start) {
+        Flux<LocalDate> flux = Flux.create(fluxSink -> {
+            LocalDate end = LocalDate.now();
+
+            for (LocalDate d = start; end.isAfter(d) && !fluxSink.isCancelled(); d = d.plusDays(1)) {
+                fluxSink.next(d);
+                log.info("fluxSink.next, {}", d);
+            }
+
+            fluxSink.complete();
+        });
+        return flux;
+    }
+
     List<PriceItem> extractPriceItems(Document doc) {
         Element tbody = doc.selectFirst("tbody");
         // TypeName, ProName, low, min, max, ADate
@@ -59,5 +73,9 @@ public class CrawlerService {
         return pricePageRepository
                 .saveAll(pricePageFlux)
                 .thenMany(priceItemRepository.saveAll(priceItemFlux));
+    }
+
+    void crawlTillNow() {
+
     }
 }

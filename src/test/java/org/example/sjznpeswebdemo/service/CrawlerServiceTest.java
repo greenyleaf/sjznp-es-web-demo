@@ -14,6 +14,26 @@ class CrawlerServiceTest {
     private CrawlerService crawlerService;
 
     @Test
+    void dateProducerTest() {
+        crawlerService.dateProducer(LocalDate.parse("2025-02-01"))
+                .doOnNext(localDate -> {
+                    log.info("localDate, {}", localDate);
+                })
+                .blockLast();
+    }
+
+    @Test
+    void dateProducerTest2() {
+        crawlerService.dateProducer(LocalDate.parse("2025-02-01"))
+                .doOnNext(localDate -> {
+                    log.info("localDate, {}", localDate);
+                })
+                .doOnCancel(() -> log.info("cancel"))
+                .take(5)
+                .blockLast();
+    }
+
+    @Test
     void crawlByDateTest() {
         crawlerService.crawlByDate(LocalDate.parse("2025-04-10"))
                 .count()

@@ -21,26 +21,6 @@ class CrawlerManagerTest {
     private PricePageRepository pricePageRepository;
 
     @Test
-    void dateProducerTest() {
-        crawlerManager.dateProducer(LocalDate.parse("2025-02-01"))
-                .doOnNext(localDate -> {
-                    log.info("localDate, {}", localDate);
-                })
-                .blockLast();
-    }
-
-    @Test
-    void dateProducerTest2() {
-        crawlerManager.dateProducer(LocalDate.parse("2025-02-01"))
-                .doOnNext(localDate -> {
-                    log.info("localDate, {}", localDate);
-                })
-                .doOnCancel(() -> log.info("cancel"))
-                .take(5)
-                .blockLast();
-    }
-
-    @Test
     void crawlOnePageTest() {
         crawlerManager.crawlOnePage(LocalDate.parse("2025-04-10"), 1, null)
                 .doOnNext(pricePage -> {
