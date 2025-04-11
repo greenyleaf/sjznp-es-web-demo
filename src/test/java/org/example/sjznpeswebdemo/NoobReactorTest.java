@@ -1,13 +1,16 @@
 package org.example.sjznpeswebdemo;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 
 @Disabled
+@Slf4j
 public class NoobReactorTest {
     @Test
     void test1() throws InterruptedException {
@@ -23,5 +26,24 @@ public class NoobReactorTest {
 //        TimeUnit.SECONDS.sleep(3);
 
         flux.blockLast();
+    }
+
+    @Test
+    void test2() {
+        Mono<Integer> mono = Mono.just(1);
+
+        mono.subscribe(i -> {
+            log.info("subscribe, {}", i);
+        });
+
+        mono.doOnNext(i -> {
+                    log.info("doOnNext 1, {}", i);
+                })
+                .block();
+
+        mono.doOnNext(i -> {
+                    log.info("doOnNext 2, {}", i);
+                })
+                .block();
     }
 }
