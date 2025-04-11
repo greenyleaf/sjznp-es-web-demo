@@ -22,4 +22,14 @@ class CrawlerServiceTest {
                 .blockLast();
     }
 
+    @Test
+    void dateProducerTest2() {
+        crawlerService.dateProducer(LocalDate.parse("2025-02-01"))
+                .doOnNext(localDate -> {
+                    log.info("localDate, {}", localDate);
+                })
+                .doOnCancel(() -> log.info("cancel"))
+                .take(5)
+                .blockLast();
+    }
 }
