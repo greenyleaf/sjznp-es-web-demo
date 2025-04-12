@@ -2,9 +2,11 @@ package org.example.sjznpeswebdemo.repository;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.sjznpeswebdemo.entity.PriceItem;
+import org.example.sjznpeswebdemo.entity.PricePage;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.elasticsearch.core.ReactiveElasticsearchOperations;
 
 import java.time.LocalDate;
 
@@ -13,6 +15,8 @@ import java.time.LocalDate;
 class PriceItemRepositoryTest {
     @Autowired
     PriceItemRepository priceItemRepository;
+    @Autowired
+    private ReactiveElasticsearchOperations reactiveElasticsearchOperations;
 
     @Test
     void countTest() {
@@ -23,6 +27,19 @@ class PriceItemRepositoryTest {
     @Test
     void deleteAllTest() {
         priceItemRepository.deleteAll().block();
+    }
+
+    @Test
+    void deleteIndexTest() {
+        reactiveElasticsearchOperations.indexOps(PriceItem.class).delete()
+                .block();
+    }
+
+    @Test
+    void firstAllTest() {
+        priceItemRepository.findAll()
+                .doOnNext(priceItem -> log.info("priceItem: {}", priceItem))
+                .blockLast();
     }
 
     @Test

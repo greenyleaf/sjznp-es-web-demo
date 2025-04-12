@@ -21,6 +21,7 @@ public class SaveManager {
 
     public Flux<PriceItem> save(Flux<PricePage> pricePageFlux, Flux<PriceItem> priceItemFlux) {
         log.info("save entered");
+
         return pricePageRepository
                 .saveAll(pricePageFlux)
                 .thenMany(priceItemRepository.saveAll(priceItemFlux));
