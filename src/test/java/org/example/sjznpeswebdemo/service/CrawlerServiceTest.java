@@ -99,15 +99,22 @@ class CrawlerServiceTest {
     @Test
     void queryTest() {
         crawlerService.query(null, LocalDate.of(2024, 8, 3), "鱼", false, 1, 20)
-                .doOnNext(customPage -> log.info("customPage: {}", customPage))
+                .doOnNext(pageDto -> log.info("pageDto: {}", pageDto))
+                .block();
+    }
+
+    @Test
+    void queryTest2() {
+        crawlerService.query(null, null, null, false, 1, 20)
+                // .doOnNext(pageDto -> log.info("pageDto: {}", pageDto))
                 .block();
     }
 
     @Test
     void queryExactTest() {
         crawlerService.query(null, null, "西瓜", true, 1, 20)
-                .doOnNext(customPage -> {
-                    log.info("customPage items: {}", JSON.toJSONString(customPage.getItems(), JSONWriter.Feature.PrettyFormat));
+                .doOnNext(pageDto -> {
+                    log.info("pageDto items: {}", JSON.toJSONString(pageDto.getItems(), JSONWriter.Feature.PrettyFormat));
                 })
                 .block();
     }

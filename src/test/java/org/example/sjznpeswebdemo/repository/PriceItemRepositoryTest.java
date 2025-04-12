@@ -20,8 +20,9 @@ class PriceItemRepositoryTest {
 
     @Test
     void countTest() {
-        Long aLong = priceItemRepository.count().block();
-        log.info("count: {}", aLong);
+        priceItemRepository.count()
+                .doOnNext(count -> log.info("count, {}", count))
+                .block();
     }
 
     @Test

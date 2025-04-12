@@ -139,20 +139,19 @@ public class CrawlerService {
 
     public Mono<PageDto> query(String typeName, LocalDate date, String name, boolean exact,
                                Integer page, Integer size) {
+        log.info("query entered");
+
         Criteria criteria = Criteria.and();
 
         if (StringUtils.hasLength(typeName)) {
-            log.info("stage 1, {}", typeName);
             criteria = criteria.and("typeName")
                     .is(typeName);
         }
         if (date != null) {
-            log.info("stage 2, {}", date);
             criteria = criteria.and("date")
                     .is(date);
         }
         if (StringUtils.hasLength(name)) {
-            log.info("stage 3, {}", name);
 
             if (exact) {
                 criteria = criteria.and("name.key")

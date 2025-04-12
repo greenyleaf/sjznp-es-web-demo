@@ -5,6 +5,7 @@ import org.example.sjznpeswebdemo.entity.PricePage;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ReactiveElasticsearchOperations;
 
 import java.time.LocalDate;
@@ -76,6 +77,17 @@ class PricePageRepositoryTest {
                     log.info("pricePage.getContent.length: {}", pricePage.getContent().length());
                 })
                 .block();
+    }
+
+    @Test
+    void findByOrderByDateAndPageNoTest() {
+        pricePageRepository.findByOrderByDateAscPageNo(PageRequest.of(0, 20))
+                .doOnNext(pricePage -> {
+                    log.info("pricePage.getDate: {}", pricePage.getDate());
+                    log.info("pricePage.getPageNo: {}", pricePage.getPageNo());
+                    log.info("pricePage.getContent.length: {}", pricePage.getContent().length());
+                })
+                .blockLast();
     }
 
     @Test
