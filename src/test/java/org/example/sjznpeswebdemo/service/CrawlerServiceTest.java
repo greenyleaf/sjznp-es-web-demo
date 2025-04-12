@@ -39,6 +39,15 @@ class CrawlerServiceTest {
     }
 
     @Test
+    void dateProducerByMonthTest() {
+        crawlerService.dateProducerByMonth(LocalDate.parse("2025-01-22"))
+                .doOnNext(date -> {
+                    log.info("date, {}", date);
+                })
+                .blockLast();
+    }
+
+    @Test
     void saveByDateTest() {
         crawlerService.saveByDate(LocalDate.parse("2024-06-01"))
                 .count()

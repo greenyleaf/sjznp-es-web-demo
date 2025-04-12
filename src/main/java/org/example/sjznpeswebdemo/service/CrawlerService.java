@@ -84,6 +84,8 @@ public class CrawlerService {
                         .flatMapSequential(pricePage ->
                                 Flux.fromIterable(parsePriceItems(Jsoup.parse(pricePage.getContent()))));
 
+        log.info("saveByDate, saving by date: {}", date);
+
         return saveManager.save(pricePageFlux, priceItemFlux);
         /*return pricePageRepository
                 .saveAll(pricePageFlux)
@@ -107,6 +109,9 @@ public class CrawlerService {
         return pricePageRepository.findFirstByOrderByDateDesc()
                 .map(pricePage -> pricePage.getDate().plusDays(1))
                 .switchIfEmpty(Mono.just(AppConstant.INITIAL_DATE))
+                .doOnNext(date -> {
+                    log.info("processing from month range: {}", date);
+                })
                 .flatMapMany(this::dateProducerByMonth)
                 .flatMapSequential(
                         this::saveByDate,
