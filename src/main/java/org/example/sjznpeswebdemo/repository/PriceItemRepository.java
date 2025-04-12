@@ -17,7 +17,11 @@ public interface PriceItemRepository extends ReactiveElasticsearchRepository<Pri
 
     Mono<PriceItem> findTopBy();
 
-    Flux<PriceItem> findByName(String name, Pageable pageable);
+    Flux<PriceItem> findByNameIs(String name, Pageable pageable);
+
+    Flux<PriceItem> findByDate(LocalDate date, Pageable pageable);
+
+    Mono<Long> countByName(String name);
 
     Flux<PriceItem> findByNameMatchesOrderByDateAsc(String name, Pageable pageable);
 

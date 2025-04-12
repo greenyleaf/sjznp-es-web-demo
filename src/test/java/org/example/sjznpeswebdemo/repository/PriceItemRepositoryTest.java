@@ -5,7 +5,7 @@ import org.example.sjznpeswebdemo.entity.PriceItem;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ReactiveElasticsearchOperations;
 
 import java.time.LocalDate;
@@ -73,16 +73,40 @@ class PriceItemRepositoryTest {
 
     @Test
     void findByNameTest() {
-        priceItemRepository.findByName("西瓜", Pageable.ofSize(20).withPage(0))
+        priceItemRepository.findByNameIs("鸭", PageRequest.of(0, 20))
                 .doOnNext(priceItem -> log.info("priceItem: {}", priceItem))
                 .blockLast()
         ;
     }
 
     @Test
+    void findByDateTest() {
+        priceItemRepository.findByDate(LocalDate.now().minusWeeks(1), PageRequest.of(0, 20))
+                .doOnNext(item -> log.info("item: {}", item))
+                .blockLast()
+        ;
+    }
+
+    @Test
+    void countByNameTest() {
+        priceItemRepository.countByName("西瓜")
+                .doOnNext(count -> log.info("count: {}", count))
+                .block()
+        ;
+    }
+
+    @Test
+    void countByNameTest2() {
+        priceItemRepository.countByName("鸡腿菇")
+                .doOnNext(count -> log.info("count: {}", count))
+                .block()
+        ;
+    }
+
+    @Test
     void findByNameMatchesTest() {
         // Sort sort = Sort.by(Sort.Direction.DESC, "id");
-        priceItemRepository.findByNameMatchesOrderByDateAsc("瓜", Pageable.ofSize(20).withPage(1))
+        priceItemRepository.findByNameMatchesOrderByDateAsc("鸡腿", PageRequest.of(0, 20))
                 .doOnNext(priceItem -> log.info("priceItem: {}", priceItem))
                 .blockLast()
         ;
@@ -90,7 +114,16 @@ class PriceItemRepositoryTest {
 
     @Test
     void findByNameMatchesTest2() {
-        priceItemRepository.findByNameMatchesOrderByDateAsc("枣", Pageable.ofSize(20).withPage(1))
+        priceItemRepository.findByNameMatchesOrderByDateAsc("枣", PageRequest.of(0, 20))
+                .doOnNext(priceItem -> log.info("priceItem: {}", priceItem))
+                .blockLast()
+        ;
+    }
+
+    @Test
+    void findByTypeNameAndDateAndNameMatchesTest() {
+        priceItemRepository
+                .findByTypeNameAndDateAndNameMatches("水果", LocalDate.now().minusWeeks(1), "瓜", PageRequest.of(0, 20))
                 .doOnNext(priceItem -> log.info("priceItem: {}", priceItem))
                 .blockLast()
         ;
