@@ -2,7 +2,7 @@ package org.example.sjznpeswebdemo.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.sjznpeswebdemo.dto.PageDto;
-import org.example.sjznpeswebdemo.service.CrawlerService;
+import org.example.sjznpeswebdemo.service.QueryService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,10 +13,10 @@ import java.time.LocalDate;
 @RestController
 @Slf4j
 public class MainController {
-    private final CrawlerService crawlerService;
+    private final QueryService queryService;
 
-    public MainController(CrawlerService crawlerService) {
-        this.crawlerService = crawlerService;
+    public MainController(QueryService queryService) {
+        this.queryService = queryService;
     }
 
     @GetMapping
@@ -29,6 +29,6 @@ public class MainController {
         if (page < 0) {
             page = 0;
         }
-        return crawlerService.query(typeName, date, name, exact, page, size);
+        return queryService.query(typeName, date, name, exact, page, size);
     }
 }
