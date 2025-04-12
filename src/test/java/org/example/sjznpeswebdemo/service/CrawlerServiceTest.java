@@ -98,11 +98,12 @@ class CrawlerServiceTest {
 
     @Test
     void queryTest() {
-        crawlerService.query(null, LocalDate.parse("2025-04-09"), "鱼", false, 0, 20)
+        crawlerService.query(null, LocalDate.parse("2025-04-09"), "果", false, 0, 20)
                 // crawlerService.query(null, null, "鱼", false, 0, 20)
                 // crawlerService.query("禽蛋类", LocalDate.parse("2024-06-01"), null, false, 0, 20)
                 // crawlerService.query("禽蛋类", null, "鸡", false, 0, 20)
                 .doOnNext(pageDto -> {
+                    log.info("pageDto: {}", pageDto);
                     log.info("pageDto items: {}", JSON.toJSONString(pageDto.getItems(), JSONWriter.Feature.PrettyFormat));
                 })
                 // .doOnNext(pageDto -> log.info("pageDto: {}", pageDto))
