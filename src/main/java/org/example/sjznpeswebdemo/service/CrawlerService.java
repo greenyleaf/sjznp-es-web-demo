@@ -62,7 +62,7 @@ public class CrawlerService {
 
     List<PriceItem> parsePriceItems(Document doc) {
         Element tbody = doc.selectFirst("tbody");
-        // TypeName, ProName, low, min, max, ADate
+        // "TypeName, ProName, low, min, max, ADate"
         if (tbody != null && tbody.childrenSize() > 0) {
             return tbody.children()
                     .stream()
@@ -77,6 +77,8 @@ public class CrawlerService {
     }
 
     Flux<PriceItem> saveByDate(LocalDate date) {
+        log.info("saveByDate entered");
+
         Flux<PricePage> pricePageFlux = crawlerManager.crawlByDate(date);
 
         Flux<PriceItem> priceItemFlux =
@@ -84,7 +86,7 @@ public class CrawlerService {
                         .flatMapSequential(pricePage ->
                                 Flux.fromIterable(parsePriceItems(Jsoup.parse(pricePage.getContent()))));
 
-        log.info("saveByDate, saving by date: {}", date);
+        log.info("saveByDate, saving: {}", date);
 
         return saveManager.save(pricePageFlux, priceItemFlux);
         /*return pricePageRepository
