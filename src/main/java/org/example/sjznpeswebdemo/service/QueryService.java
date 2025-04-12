@@ -70,7 +70,8 @@ public class QueryService {
                                 .sort(PriceItem.class).by(PriceItem::getDate).descending()
                                 .and(Sort.sort(PriceItem.class).by(PriceItem::getTypeName))
                         // .and(Sort.by("name.key"))
-                ).withHighlightQuery(
+                )
+                .withHighlightQuery(
                         new HighlightQuery(
                                 new Highlight(
                                         List.of(
