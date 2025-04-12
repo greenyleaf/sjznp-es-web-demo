@@ -1,4 +1,11 @@
 spring.application.name: sjznp-es-web-demo
 spring:
   main:
-    web-application-type: none
+    web-application-type: reactive
+  webflux:
+    base-path: api
+logging:
+  level:
+    root: info
+#    'org.springframework.web.reactive': info
+#    'org.apache.http.wire': debug
