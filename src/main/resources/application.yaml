@@ -9,3 +9,6 @@ logging:
     root: info
 #    'org.springframework.web.reactive': info
 #    'org.apache.http.wire': debug
+server:
+  compression:
+    enabled: true
