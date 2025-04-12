@@ -39,6 +39,7 @@ class PriceItemRepositoryTest {
     @Test
     void firstAllTest() {
         priceItemRepository.findAll()
+                .take(100)
                 .doOnNext(priceItem -> log.info("priceItem: {}", priceItem))
                 .blockLast();
     }
