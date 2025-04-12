@@ -50,7 +50,7 @@ class CrawlerServiceTest {
 
     @Test
     void saveByDateTest2() {
-        crawlerService.saveByDate(LocalDate.parse("2025-04-10"))
+        crawlerService.saveByDate(LocalDate.parse("2024-06-01"))
                 .doOnNext(item -> {
                     log.info("doOnNext");
                 })
@@ -67,7 +67,6 @@ class CrawlerServiceTest {
                     log.info("localDate, {}", localDate);
                 })
                 .block();
-
     }
 
     @Test
@@ -76,6 +75,13 @@ class CrawlerServiceTest {
                 .doOnNext(count -> log.info("count, {}", count))
                 .block()
         ;
+    }
 
+    @Test
+    void processOneMonthTest() {
+        crawlerService.processOneMonth()
+                .doOnNext(count -> log.info("count, {}", count))
+                .block()
+        ;
     }
 }

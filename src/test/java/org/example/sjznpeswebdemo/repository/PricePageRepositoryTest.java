@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.elasticsearch.core.ReactiveElasticsearchOperations;
 
+import java.time.LocalDate;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Slf4j
 class PricePageRepositoryTest {
@@ -25,10 +27,12 @@ class PricePageRepositoryTest {
     void findAllTest() {
         pricePageRepository.findAll()
                 .doOnNext(pricePage -> {
+                    log.info("pricePage.getDate: {}", pricePage.getDate());
                     log.info("pricePage.getPageNo: {}", pricePage.getPageNo());
+                    log.info("pricePage.getContent.length: {}", pricePage.getContent().length());
                 })
                 .count()
-                .doOnNext(count -> log.info("findAll: {}", count))
+                .doOnNext(count -> log.info("count: {}", count))
                 .block();
     }
 
@@ -55,9 +59,38 @@ class PricePageRepositoryTest {
     @Test
     void findFirstByOrderByDateDescTest() {
         PricePage block = pricePageRepository.findFirstByOrderByDateDesc()
-                .doOnNext(pricePage -> log.info("first: {}", pricePage))
+                .doOnNext(pricePage -> {
+                    log.info("pricePage.getDate: {}", pricePage.getDate());
+                    log.info("pricePage.getPageNo: {}", pricePage.getPageNo());
+                    log.info("pricePage.getContent.length: {}", pricePage.getContent().length());
+                })
                 .block();
+    }
 
-        log.info("first: {}", block);
+    @Test
+    void findFirstByOrderByDateTest() {
+        PricePage block = pricePageRepository.findFirstByOrderByDate()
+                .doOnNext(pricePage -> {
+                    log.info("pricePage.getDate: {}", pricePage.getDate());
+                    log.info("pricePage.getPageNo: {}", pricePage.getPageNo());
+                    log.info("pricePage.getContent.length: {}", pricePage.getContent().length());
+                })
+                .block();
+    }
+
+    @Test
+    void countByDateTest() {
+        pricePageRepository.countByDate(LocalDate.parse("2024-06-01"))
+                .doOnNext(count -> log.info("count: {}", count))
+                .block()
+        ;
+    }
+
+    @Test
+    void countByDateTest2() {
+        pricePageRepository.countByDate(LocalDate.parse("2024-07-14"))
+                .doOnNext(count -> log.info("count: {}", count))
+                .block()
+        ;
     }
 }

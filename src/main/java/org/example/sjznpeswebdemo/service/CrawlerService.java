@@ -3,7 +3,6 @@ package org.example.sjznpeswebdemo.service;
 import lombok.extern.slf4j.Slf4j;
 import org.example.sjznpeswebdemo.entity.PriceItem;
 import org.example.sjznpeswebdemo.entity.PricePage;
-import org.example.sjznpeswebdemo.repository.PriceItemRepository;
 import org.example.sjznpeswebdemo.repository.PricePageRepository;
 import org.example.sjznpeswebdemo.util.AppConstant;
 import org.example.sjznpeswebdemo.util.AppUtil;
@@ -24,12 +23,12 @@ import java.util.stream.Collectors;
 public class CrawlerService {
     private final CrawlerManager crawlerManager;
     private final PricePageRepository pricePageRepository;
-    private final PriceItemRepository priceItemRepository;
+    private final SaveManager saveManager;
 
-    public CrawlerService(CrawlerManager crawlerManager, PricePageRepository pricePageRepository, PriceItemRepository priceItemRepository) {
+    public CrawlerService(CrawlerManager crawlerManager, PricePageRepository pricePageRepository, SaveManager saveManager) {
         this.crawlerManager = crawlerManager;
         this.pricePageRepository = pricePageRepository;
-        this.priceItemRepository = priceItemRepository;
+        this.saveManager = saveManager;
     }
 
     Flux<LocalDate> dateProducer(LocalDate start) {
@@ -38,7 +37,6 @@ public class CrawlerService {
 
             for (LocalDate d = start; end.isAfter(d) && !fluxSink.isCancelled(); d = d.plusDays(1)) {
                 fluxSink.next(d);
-                log.info("fluxSink.next, {}", d);
             }
 
             fluxSink.complete();
@@ -46,12 +44,26 @@ public class CrawlerService {
         return flux;
     }
 
-    List<PriceItem> extractPriceItems(Document doc) {
+    Flux<LocalDate> dateProducerByMonth(LocalDate start) {
+        Flux<LocalDate> flux = Flux.create(fluxSink -> {
+            LocalDate end = start.withDayOfMonth(1).plusMonths(1);
+            if (end.isAfter(LocalDate.now())) {
+                end = LocalDate.now();
+            }
+
+            for (LocalDate d = start; end.isAfter(d) && !fluxSink.isCancelled(); d = d.plusDays(1)) {
+                fluxSink.next(d);
+            }
+
+            fluxSink.complete();
+        });
+        return flux;
+    }
+
+    List<PriceItem> parsePriceItems(Document doc) {
         Element tbody = doc.selectFirst("tbody");
         // TypeName, ProName, low, min, max, ADate
         if (tbody != null && tbody.childrenSize() > 0) {
-            // log.info("tbody, \n{}", tbody.html());
-
             return tbody.children()
                     .stream()
                     .map(tr -> tr.children()
@@ -70,11 +82,12 @@ public class CrawlerService {
         Flux<PriceItem> priceItemFlux =
                 pricePageFlux
                         .flatMapSequential(pricePage ->
-                                Flux.fromIterable(extractPriceItems(Jsoup.parse(pricePage.getContent()))));
+                                Flux.fromIterable(parsePriceItems(Jsoup.parse(pricePage.getContent()))));
 
-        return pricePageRepository
+        return saveManager.save(pricePageFlux, priceItemFlux);
+        /*return pricePageRepository
                 .saveAll(pricePageFlux)
-                .thenMany(priceItemRepository.saveAll(priceItemFlux));
+                .thenMany(priceItemRepository.saveAll(priceItemFlux));*/
     }
 
     Mono<Long> processTillNow() {
@@ -82,9 +95,19 @@ public class CrawlerService {
                 .map(pricePage -> pricePage.getDate().plusDays(1))
                 .switchIfEmpty(Mono.just(AppConstant.INITIAL_DATE))
                 .flatMapMany(this::dateProducer)
-                .doOnNext(date -> {
-                    log.info("stage 3, {}", date);
-                })
+                .flatMapSequential(
+                        this::saveByDate,
+                        1
+                )
+                .count()
+                ;
+    }
+
+    Mono<Long> processOneMonth() {
+        return pricePageRepository.findFirstByOrderByDateDesc()
+                .map(pricePage -> pricePage.getDate().plusDays(1))
+                .switchIfEmpty(Mono.just(AppConstant.INITIAL_DATE))
+                .flatMapMany(this::dateProducerByMonth)
                 .flatMapSequential(
                         this::saveByDate,
                         1

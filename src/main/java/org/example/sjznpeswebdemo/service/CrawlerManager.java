@@ -25,9 +25,12 @@ public class CrawlerManager {
     }
 
     int parsePageCount(Document doc) {
+        // 最后一页没有那个链接
+
+        final Pattern pageNoPattern = Pattern.compile("page=(\\d+)");
+
         String href = doc.select(".page a:last-child").attr("href");
         if (!href.isEmpty()) {
-            final Pattern pageNoPattern = Pattern.compile("page=(\\d+)");
             Matcher matcher = pageNoPattern.matcher(href);
             if (matcher.find()) {
                 return Integer.parseInt(matcher.group(1));

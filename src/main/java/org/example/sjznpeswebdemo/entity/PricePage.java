@@ -25,6 +25,7 @@ public class PricePage {
     private LocalDate date;
     private Integer pageNo;
     private Boolean fetched;
+    @Field(index = false)
     private String content;
     private Integer httpStatus;
 

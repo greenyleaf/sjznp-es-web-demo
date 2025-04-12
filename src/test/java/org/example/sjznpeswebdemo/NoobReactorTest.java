@@ -71,4 +71,56 @@ public class NoobReactorTest {
                 .blockLast()
         ;
     }
+
+    @Test
+    void test5() {
+        Flux.just(3, 5, 7)
+                .doOnNext(integer -> {
+                    log.info("integer 1, {}", integer);
+                })
+                .delayElements(Duration.ofSeconds(3))
+                .doOnNext(integer -> {
+                    log.info("integer 2, {}", integer);
+                })
+                .blockLast();
+    }
+
+    @Test
+    void test6() {
+        Mono.just(5)
+                .doOnNext(integer -> {
+                    log.info("integer 1, {}", integer);
+                })
+                .delayElement(Duration.ofSeconds(3))
+                .doOnNext(integer -> {
+                    log.info("integer 2, {}", integer);
+                })
+                .block();
+    }
+
+    @Test
+    void test7() {
+        Mono.empty()
+                .doOnNext(integer -> {
+                    log.info("integer 1, {}", integer);
+                })
+                .then(Mono.just(5))
+                .doOnNext(integer -> {
+                    log.info("integer 2, {}", integer);
+                })
+                .block();
+    }
+
+    @Test
+    void test8() {
+        Mono.empty()
+                .doOnNext(integer -> {
+                    log.info("integer 1, {}", integer);
+                })
+                .thenReturn(5)
+                .doOnNext(integer -> {
+                    log.info("integer 2, {}", integer);
+                })
+                .block();
+    }
 }
