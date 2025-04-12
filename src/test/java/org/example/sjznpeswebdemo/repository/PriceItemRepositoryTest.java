@@ -2,10 +2,10 @@ package org.example.sjznpeswebdemo.repository;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.sjznpeswebdemo.entity.PriceItem;
-import org.example.sjznpeswebdemo.entity.PricePage;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ReactiveElasticsearchOperations;
 
 import java.time.LocalDate;
@@ -69,6 +69,31 @@ class PriceItemRepositoryTest {
         priceItemRepository.findTopBy()
                 .doOnNext(priceItem -> log.info("first: {}", priceItem))
                 .block();
+    }
+
+    @Test
+    void findByNameTest() {
+        priceItemRepository.findByName("西瓜", Pageable.ofSize(20).withPage(0))
+                .doOnNext(priceItem -> log.info("priceItem: {}", priceItem))
+                .blockLast()
+        ;
+    }
+
+    @Test
+    void findByNameMatchesTest() {
+        // Sort sort = Sort.by(Sort.Direction.DESC, "id");
+        priceItemRepository.findByNameMatchesOrderByDateAsc("瓜", Pageable.ofSize(20).withPage(1))
+                .doOnNext(priceItem -> log.info("priceItem: {}", priceItem))
+                .blockLast()
+        ;
+    }
+
+    @Test
+    void findByNameMatchesTest2() {
+        priceItemRepository.findByNameMatchesOrderByDateAsc("枣", Pageable.ofSize(20).withPage(1))
+                .doOnNext(priceItem -> log.info("priceItem: {}", priceItem))
+                .blockLast()
+        ;
     }
 
     @Test

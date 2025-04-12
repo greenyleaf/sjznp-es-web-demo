@@ -1,5 +1,7 @@
 package org.example.sjznpeswebdemo.service;
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONWriter;
 import lombok.extern.slf4j.Slf4j;
 import org.example.sjznpeswebdemo.repository.PricePageRepository;
 import org.example.sjznpeswebdemo.util.AppConstant;
@@ -92,5 +94,21 @@ class CrawlerServiceTest {
                 .doOnNext(count -> log.info("count, {}", count))
                 .block()
         ;
+    }
+
+    @Test
+    void queryTest() {
+        crawlerService.query(null, LocalDate.of(2024, 8, 3), "鱼", false, 1, 20)
+                .doOnNext(customPage -> log.info("customPage: {}", customPage))
+                .block();
+    }
+
+    @Test
+    void queryExactTest() {
+        crawlerService.query(null, null, "西瓜", true, 1, 20)
+                .doOnNext(customPage -> {
+                    log.info("customPage items: {}", JSON.toJSONString(customPage.getItems(), JSONWriter.Feature.PrettyFormat));
+                })
+                .block();
     }
 }
