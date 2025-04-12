@@ -173,9 +173,9 @@ public class CrawlerService {
                 .builder(criteria)
                 .withPageable(Pageable.ofSize(size).withPage(page))
                 .withSort(Sort
-                        .sort(PriceItem.class).by(PriceItem::getDate).descending()
-                        .and(Sort.sort(PriceItem.class).by(PriceItem::getTypeName))
-                        .and(Sort.by("name.key"))
+                                .sort(PriceItem.class).by(PriceItem::getDate).descending()
+                                .and(Sort.sort(PriceItem.class).by(PriceItem::getTypeName))
+                        // .and(Sort.by("name.key"))
                 ).withHighlightQuery(
                         new HighlightQuery(
                                 new Highlight(

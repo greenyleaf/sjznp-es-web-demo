@@ -107,7 +107,7 @@ class PriceItemRepositoryTest {
     @Test
     void findByNameMatchesTest() {
         // Sort sort = Sort.by(Sort.Direction.DESC, "id");
-        priceItemRepository.findByNameMatchesOrderByDateAsc("鸡腿", PageRequest.of(0, 20))
+        priceItemRepository.findByNameMatchesOrderByDateAscTypeNameAsc("鱼", PageRequest.of(0, 20))
                 .doOnNext(priceItem -> log.info("priceItem: {}", priceItem))
                 .blockLast()
         ;
@@ -115,7 +115,7 @@ class PriceItemRepositoryTest {
 
     @Test
     void findByNameMatchesTest2() {
-        priceItemRepository.findByNameMatchesOrderByDateAsc("枣", PageRequest.of(0, 20))
+        priceItemRepository.findByNameMatchesOrderByDateAscTypeNameAsc("枣", PageRequest.of(0, 20))
                 .doOnNext(priceItem -> log.info("priceItem: {}", priceItem))
                 .blockLast()
         ;
