@@ -123,4 +123,23 @@ public class NoobReactorTest {
                 })
                 .block();
     }
+
+    @Test
+    void test9() {
+        Flux.range(1, 10)
+                .delayElements(Duration.ofMillis(500))
+                .doOnNext(integer -> {
+                    log.info("integer, {}", integer);
+                })
+                .concatMap(integer -> {
+                    // .flatMap(integer -> {
+                    // .flatMapSequential(integer -> {
+                    // return Mono.just(integer).delayElement(Duration.ofMillis(1200 - integer * 100));
+                    return Mono.just(integer).delayElement(Duration.ofMillis(400 * 11 - integer * 400));
+                })
+                .doOnNext(integer -> {
+                    log.info("integer 2, {}", integer);
+                })
+                .blockLast();
+    }
 }
