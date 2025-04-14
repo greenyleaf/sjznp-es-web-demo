@@ -20,7 +20,7 @@ const {queryPrices, data: pageData, running, error} = useStatefulPricesRequest()
 
 const searchHandler = (filterParam) => {
   filter.value = filterParam;
-  queryPrices({...filter.value, page: 1, size: pageSize.value});
+  queryPrices({...filter.value, page: 0, size: pageSize.value});
 };
 
 const goPageHandler = (pageNo, size) => {
@@ -38,7 +38,7 @@ searchHandler();
   <main>
     <div>价格行情</div>
 
-    <search-filter v-model:filter="filter" @search-action="searchHandler"></search-filter>
+    <search-filter @search="searchHandler"></search-filter>
 
     <div v-if="pageData" class="part-data">
       <PriceTable :page-data="pageData" :running="running"></PriceTable>

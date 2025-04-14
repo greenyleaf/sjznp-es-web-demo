@@ -9,6 +9,7 @@ const emits = defineEmits(['search']);
 const filter = ref({...initialFilter});
 
 const searchAction = () => {
+  console.log('searchAction entered');
   emits('search', filter.value);
 };
 
