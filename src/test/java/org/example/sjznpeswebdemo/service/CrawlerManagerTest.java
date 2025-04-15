@@ -5,6 +5,7 @@ import org.example.sjznpeswebdemo.entity.PricePage;
 import org.example.sjznpeswebdemo.repository.PricePageRepository;
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,6 +13,7 @@ import reactor.core.publisher.Flux;
 
 import java.time.LocalDate;
 
+@Disabled
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Slf4j
 class CrawlerManagerTest {

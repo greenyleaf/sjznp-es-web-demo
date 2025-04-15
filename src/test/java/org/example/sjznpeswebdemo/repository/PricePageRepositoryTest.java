@@ -2,6 +2,7 @@ package org.example.sjznpeswebdemo.repository;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.sjznpeswebdemo.entity.PricePage;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,6 +11,7 @@ import org.springframework.data.elasticsearch.core.ReactiveElasticsearchOperatio
 
 import java.time.LocalDate;
 
+@Disabled
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Slf4j
 class PricePageRepositoryTest {

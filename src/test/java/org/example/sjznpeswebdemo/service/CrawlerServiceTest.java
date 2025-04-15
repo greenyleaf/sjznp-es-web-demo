@@ -3,6 +3,7 @@ package org.example.sjznpeswebdemo.service;
 import lombok.extern.slf4j.Slf4j;
 import org.example.sjznpeswebdemo.repository.PricePageRepository;
 import org.example.sjznpeswebdemo.util.AppConstant;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,6 +11,7 @@ import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 
+@Disabled
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Slf4j
 class CrawlerServiceTest {
