@@ -152,4 +152,23 @@ public class NoobReactorTest {
                 })
                 .block();
     }
+
+    @Test
+    void test11() {
+        Flux.defer(() -> {
+                    return
+                            Flux.create(fluxSink -> {
+                                for (int i = 0; i < 10; i++) {
+                                    log.info("stage 1");
+                                    fluxSink.next(i);
+                                }
+                                fluxSink.complete();
+                            });
+                })
+                .delayElements(Duration.ofMillis(100))
+                .doOnNext(integer -> {
+                    log.info("integer, {}", integer);
+                })
+                .blockLast();
+    }
 }
