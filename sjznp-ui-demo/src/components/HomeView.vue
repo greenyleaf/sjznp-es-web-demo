@@ -1,6 +1,6 @@
 <script setup>
 
-import {ref} from "vue";
+import {ref, useTemplateRef} from "vue";
 import {useStatefulPricesRequest} from "@/composables/stateful-np-api.js";
 import PaginationComponent from "@/components/PaginationComponent.vue";
 import PriceTable from "@/components/PriceTable.vue";
@@ -8,6 +8,8 @@ import SearchFilter from "@/components/SearchFilter.vue";
 
 const pageSize = ref(20);
 const filter = ref({});
+
+const page = useTemplateRef('page');
 
 const {queryPrices, data: pageData, running, error} = useStatefulPricesRequest();
 
@@ -21,6 +23,8 @@ const {queryPrices, data: pageData, running, error} = useStatefulPricesRequest()
 const searchHandler = (filterParam) => {
   filter.value = filterParam;
   queryPrices({...filter.value, page: 0, size: pageSize.value});
+
+  page.value?.resetPageNo();
 };
 
 const goPageHandler = (pageNo, size) => {
@@ -44,7 +48,9 @@ searchHandler();
       <PriceTable :page-data="pageData" :running="running"></PriceTable>
 
       <pagination-component :page-data="pageData" v-model:page-size="pageSize"
-                            @go-page="goPageHandler"></pagination-component>
+                            @go-page="goPageHandler"
+                            ref="page"
+      ></pagination-component>
     </div>
     <div v-else>点击查询</div>
 

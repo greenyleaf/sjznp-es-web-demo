@@ -19,6 +19,12 @@ const goPageAction = (pageNoParam, size) => {
   emits('goPage', pageNoParam, size ?? pageSize.value);
 };
 
+const resetPageNo = () => {
+  pageNo.value = 0;
+};
+
+defineExpose({resetPageNo});
+
 </script>
 
 <template>
