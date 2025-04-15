@@ -39,7 +39,8 @@ public class PriceItem {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime updateTime;
 
-    public PriceItem(String typeName, String name, BigDecimal min, BigDecimal avg, BigDecimal max, LocalDate date) {
+    public PriceItem(String id, String typeName, String name, BigDecimal min, BigDecimal avg, BigDecimal max, LocalDate date) {
+        this.id = id;
         this.typeName = typeName;
         this.name = name;
         this.min = min;

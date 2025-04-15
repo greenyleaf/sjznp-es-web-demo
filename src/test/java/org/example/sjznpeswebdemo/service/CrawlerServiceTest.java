@@ -93,4 +93,10 @@ class CrawlerServiceTest {
                 .block()
         ;
     }
+
+    @Test
+    void saveAllPageItemsTest() {
+        crawlerService.saveAllPageItems()
+                .blockLast();
+    }
 }

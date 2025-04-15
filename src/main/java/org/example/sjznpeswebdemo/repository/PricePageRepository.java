@@ -15,6 +15,8 @@ public interface PricePageRepository extends ReactiveElasticsearchRepository<Pri
 
     Mono<PricePage> findFirstByOrderByDate();
 
+    Flux<PricePage> findAllByDateIsAfterOrderByDateAscPageNo(LocalDate date);
+
     Flux<PricePage> findByOrderByDateAscPageNo(Pageable pageable);
 
     Mono<Long> countByDate(LocalDate date);

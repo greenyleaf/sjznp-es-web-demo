@@ -105,4 +105,14 @@ class PricePageRepositoryTest {
                 .block()
         ;
     }
+
+    @Test
+    void findAllByDateIsAfterOrderByDateAscPageNoTest() {
+        pricePageRepository.findAllByDateIsAfterOrderByDateAscPageNo(LocalDate.parse("2025-01-01"))
+                .doOnNext(pricePage -> {
+                    log.info("pricePage.getDate: {}", pricePage.getDate());
+                })
+                .blockLast()
+        ;
+    }
 }

@@ -3,6 +3,7 @@ package org.example.sjznpeswebdemo.service;
 import lombok.extern.slf4j.Slf4j;
 import org.example.sjznpeswebdemo.entity.PriceItem;
 import org.example.sjznpeswebdemo.entity.PricePage;
+import org.example.sjznpeswebdemo.repository.PriceItemRepository;
 import org.example.sjznpeswebdemo.repository.PricePageRepository;
 import org.example.sjznpeswebdemo.util.AppConstant;
 import org.example.sjznpeswebdemo.util.AppUtil;
@@ -26,12 +27,14 @@ public class CrawlerService {
     private final PricePageRepository pricePageRepository;
     private final SaveManager saveManager;
     private final ReactiveElasticsearchOperations reactiveElasticsearchOperations;
+    private final PriceItemRepository priceItemRepository;
 
-    public CrawlerService(CrawlerManager crawlerManager, PricePageRepository pricePageRepository, SaveManager saveManager, ReactiveElasticsearchOperations reactiveElasticsearchOperations) {
+    public CrawlerService(CrawlerManager crawlerManager, PricePageRepository pricePageRepository, SaveManager saveManager, ReactiveElasticsearchOperations reactiveElasticsearchOperations, PriceItemRepository priceItemRepository) {
         this.crawlerManager = crawlerManager;
         this.pricePageRepository = pricePageRepository;
         this.saveManager = saveManager;
         this.reactiveElasticsearchOperations = reactiveElasticsearchOperations;
+        this.priceItemRepository = priceItemRepository;
     }
 
     Flux<LocalDate> dateProducer(LocalDate start) {
@@ -95,6 +98,24 @@ public class CrawlerService {
         /*return pricePageRepository
                 .saveAll(pricePageFlux)
                 .thenMany(priceItemRepository.saveAll(priceItemFlux));*/
+    }
+
+    Flux<PriceItem> saveAllPageItems() {
+        log.info("saveAllPageItems entered");
+
+        Flux<PriceItem> priceItemFlux = priceItemRepository.findFirstByOrderByDateDesc()
+                .map(priceItem -> priceItem.getDate().plusDays(1))
+                .switchIfEmpty(Mono.just(AppConstant.INITIAL_DATE))
+                .doOnNext(date -> {
+                    log.info("saveAllPageItems, is of after date: {}", date);
+                })
+                .flatMapMany(pricePageRepository::findAllByDateIsAfterOrderByDateAscPageNo)
+                .flatMapSequential(pricePage ->
+                        Flux.fromIterable(parsePriceItems(Jsoup.parse(pricePage.getContent()))));
+
+        log.info("saveAllPageItems, saving");
+
+        return priceItemRepository.saveAll(priceItemFlux);
     }
 
     Mono<Long> processTillNow() {
