@@ -52,7 +52,6 @@ class CrawlerServiceTest {
     @Test
     void saveByDateTest() {
         crawlerService.saveByDate(LocalDate.parse("2024-06-01"))
-                .count()
                 .doOnNext(count -> {
                     log.info("count, {}", count);
                 })
@@ -65,7 +64,7 @@ class CrawlerServiceTest {
                 .doOnNext(item -> {
                     log.info("doOnNext");
                 })
-                .blockLast()
+                .block()
         ;
     }
 

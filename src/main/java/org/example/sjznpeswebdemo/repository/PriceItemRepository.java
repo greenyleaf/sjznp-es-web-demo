@@ -28,4 +28,6 @@ public interface PriceItemRepository extends ReactiveElasticsearchRepository<Pri
     Flux<PriceItem> findByTypeNameAndDateAndNameMatches(String typeName, LocalDate date, String name, Pageable pageable);
 
     Mono<Long> countByDate(LocalDate date);
+
+    Mono<Long> deleteByDateIsAfter(LocalDate date);
 }

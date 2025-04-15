@@ -46,10 +46,25 @@ class PricePageRepositoryTest {
     }
 
     @Test
+    void deleteByDateIsAfterTest() {
+        pricePageRepository.deleteByDateIsAfter(LocalDate.parse("2024-11-28"))
+                .doOnNext(count -> log.info("count, {}", count))
+                .block();
+    }
+
+    @Test
     void deleteIndexTest() {
         reactiveElasticsearchOperations.indexOps(PricePage.class).delete()
                 .block();
     }
+
+    @Test
+    void deleteByDateTest() {
+        pricePageRepository.deleteByDate(LocalDate.parse("2024-11-28"))
+                .doOnNext(count -> log.info("count: {}", count))
+                .block();
+    }
+
 
     @Test
     void firstTest() {
@@ -94,7 +109,7 @@ class PricePageRepositoryTest {
 
     @Test
     void countByDateTest() {
-        pricePageRepository.countByDate(LocalDate.parse("2024-06-01"))
+        pricePageRepository.countByDate(LocalDate.parse("2024-11-28"))
                 .doOnNext(count -> log.info("count: {}", count))
                 .block()
         ;

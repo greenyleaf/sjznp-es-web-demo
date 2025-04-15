@@ -142,4 +142,14 @@ public class NoobReactorTest {
                 })
                 .blockLast();
     }
+
+    @Test
+    void test10() {
+        Flux.empty()
+                .count()
+                .doOnNext(integer -> {
+                    log.info("integer, {}", integer);
+                })
+                .block();
+    }
 }

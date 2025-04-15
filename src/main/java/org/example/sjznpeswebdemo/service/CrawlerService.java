@@ -2,7 +2,6 @@ package org.example.sjznpeswebdemo.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.sjznpeswebdemo.entity.PriceItem;
-import org.example.sjznpeswebdemo.entity.PricePage;
 import org.example.sjznpeswebdemo.repository.PriceItemRepository;
 import org.example.sjznpeswebdemo.repository.PricePageRepository;
 import org.example.sjznpeswebdemo.util.AppConstant;
@@ -82,19 +81,28 @@ public class CrawlerService {
         return Collections.emptyList();
     }
 
-    Flux<PriceItem> saveByDate(LocalDate date) {
+    Mono<Long> saveByDate(LocalDate date) {
         log.info("saveByDate entered");
+        log.info("saveByDate, date: {}", date);
 
-        Flux<PricePage> pricePageFlux = crawlerManager.crawlByDate(date);
+        return crawlerManager.crawlByDate(date)
+                .collectList()
+                .flatMapMany(pricePageRepository::saveAll)
+                .flatMapSequential(pricePage -> {
+                    List<PriceItem> list = parsePriceItems(Jsoup.parse(pricePage.getContent()));
 
-        Flux<PriceItem> priceItemFlux =
-                pricePageFlux
-                        .flatMapSequential(pricePage ->
-                                Flux.fromIterable(parsePriceItems(Jsoup.parse(pricePage.getContent()))));
+                    return Mono.just(list);
+                })
+                .concatMap(priceItems -> {
+                    return priceItems.isEmpty() ? Mono.just(0)
+                            : priceItemRepository.saveAll(priceItems)
+                            .count();
+                })
+                .count()
+                .doOnNext(count -> {
+                    log.info("stage 6, count: {}", count);
+                });
 
-        log.info("saveByDate, saving: {}", date);
-
-        return saveManager.save(pricePageFlux, priceItemFlux);
         /*return pricePageRepository
                 .saveAll(pricePageFlux)
                 .thenMany(priceItemRepository.saveAll(priceItemFlux));*/
@@ -104,7 +112,8 @@ public class CrawlerService {
         log.info("saveAllPageItems entered");
 
         Flux<PriceItem> priceItemFlux = priceItemRepository.findFirstByOrderByDateDesc()
-                .map(priceItem -> priceItem.getDate().plusDays(1))
+                // .map(priceItem -> priceItem.getDate().plusDays(1))
+                .map(PriceItem::getDate)
                 .switchIfEmpty(Mono.just(AppConstant.INITIAL_DATE))
                 .doOnNext(date -> {
                     log.info("saveAllPageItems, is of after date: {}", date);
@@ -123,10 +132,7 @@ public class CrawlerService {
                 .map(pricePage -> pricePage.getDate().plusDays(1))
                 .switchIfEmpty(Mono.just(AppConstant.INITIAL_DATE))
                 .flatMapMany(this::dateProducer)
-                .flatMapSequential(
-                        this::saveByDate,
-                        1
-                )
+                .concatMap(this::saveByDate)
                 .count()
                 ;
     }
@@ -139,10 +145,7 @@ public class CrawlerService {
                     log.info("processing from month range: {}", date);
                 })
                 .flatMapMany(this::dateProducerByMonth)
-                .flatMapSequential(
-                        this::saveByDate,
-                        1
-                )
+                .concatMap(this::saveByDate)
                 .count()
                 ;
     }

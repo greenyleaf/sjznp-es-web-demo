@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ReactiveElasticsearchOperations;
+import reactor.core.publisher.Flux;
 
 import java.time.LocalDate;
+import java.util.Collections;
 
 @Disabled
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
@@ -30,6 +32,13 @@ class PriceItemRepositoryTest {
     @Test
     void deleteAllTest() {
         priceItemRepository.deleteAll().block();
+    }
+
+    @Test
+    void deleteByDateIsAfterTest() {
+        priceItemRepository.deleteByDateIsAfter(LocalDate.parse("2024-11-28"))
+                .doOnNext(count -> log.info("count, {}", count))
+                .block();
     }
 
     @Test
@@ -135,7 +144,7 @@ class PriceItemRepositoryTest {
 
     @Test
     void countByDateTest() {
-        priceItemRepository.countByDate(LocalDate.parse("2024-06-02"))
+        priceItemRepository.countByDate(LocalDate.parse("2024-11-27"))
                 .doOnNext(count -> log.info("count: {}", count))
                 .block();
     }
@@ -144,6 +153,24 @@ class PriceItemRepositoryTest {
     void countByDateTest2() {
         priceItemRepository.countByDate(LocalDate.parse("2024-07-15"))
                 .doOnNext(count -> log.info("count: {}", count))
+                .block();
+    }
+
+    @Test
+    void saveAllEmptyTest() {
+        priceItemRepository.saveAll(Collections.emptyList())
+                .count()
+                .doOnNext(aLong -> log.info("count: {}", aLong))
+                .block();
+    }
+
+    @Test
+    void saveAllEmptyTest2() {
+        Flux<PriceItem> flux = Flux.empty();
+
+        priceItemRepository.saveAll(flux)
+                .count()
+                .doOnNext(aLong -> log.info("count: {}", aLong))
                 .block();
     }
 }
