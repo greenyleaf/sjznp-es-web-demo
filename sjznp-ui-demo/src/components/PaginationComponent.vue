@@ -30,7 +30,7 @@ defineExpose({resetPageNo});
 <template>
   <div class="part-data-page">
     <button type="button" @click="goPageAction(0)" :disabled="pageNo <= 0">首页</button>
-    <button type="button" @click="goPageAction(pageNo - 1)" :disabled="pageNo <= 0">上一页</button>
+    <button type="button" @click="goPageAction(pageNo - 1)" :disabled="pageNo <= 0" accesskey="P">上一页</button>
     <span v-show="pageNo >= 2">...</span>
     <button type="button" @click="goPageAction(pageNo - 1)" v-show="pageNo > 0">{{ pageNo }}</button>
     <button type="button">{{ pageNo + 1 }}</button>
@@ -38,7 +38,8 @@ defineExpose({resetPageNo});
       {{ pageNo + 2 }}
     </button>
     <span v-show="pageNo + 2 <= pageData.totalPages - 1">...</span>
-    <button type="button" @click="goPageAction(pageNo + 1)" :disabled="pageNo >= pageData.totalPages - 1">下一页
+    <button type="button" @click="goPageAction(pageNo + 1)" :disabled="pageNo >= pageData.totalPages - 1" accesskey="N">
+      下一页
     </button>
     <button type="button" @click="goPageAction(pageData.totalPages - 1)" :disabled="pageNo >= pageData.totalPages - 1">
       尾页
