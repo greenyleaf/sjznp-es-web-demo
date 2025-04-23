@@ -68,17 +68,17 @@ const twoDigits = (price) => {
 }
 
 @keyframes row-hover-anim {
-  from, 5%, 95%, to {
+  from, 12%, 88%, to {
     background-color: #90CAF9;
   }
-  45%, 55% {
+  38%, 62% {
     background-color: #64B5F6;
   }
 }
 
 .part-data-item:hover {
   /*background-color: lightsalmon;*/
-  animation: 1.6s infinite row-hover-anim ease-in-out;
+  animation: 2.4s infinite row-hover-anim ease-in-out;
 }
 
 .part-data-table {
