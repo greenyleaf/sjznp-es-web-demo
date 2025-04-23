@@ -24,15 +24,11 @@ import java.util.stream.Collectors;
 public class CrawlerService {
     private final CrawlerManager crawlerManager;
     private final PricePageRepository pricePageRepository;
-    private final SaveManager saveManager;
-    private final ReactiveElasticsearchOperations reactiveElasticsearchOperations;
     private final PriceItemRepository priceItemRepository;
 
     public CrawlerService(CrawlerManager crawlerManager, PricePageRepository pricePageRepository, SaveManager saveManager, ReactiveElasticsearchOperations reactiveElasticsearchOperations, PriceItemRepository priceItemRepository) {
         this.crawlerManager = crawlerManager;
         this.pricePageRepository = pricePageRepository;
-        this.saveManager = saveManager;
-        this.reactiveElasticsearchOperations = reactiveElasticsearchOperations;
         this.priceItemRepository = priceItemRepository;
     }
 
