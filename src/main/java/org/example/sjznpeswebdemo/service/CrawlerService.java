@@ -89,11 +89,10 @@ public class CrawlerService {
 
                     return Mono.just(list);
                 })
-                .concatMap(priceItems -> {
-                    return priceItems.isEmpty() ? Mono.just(0)
-                            : priceItemRepository.saveAll(priceItems)
-                            .count();
-                })
+                .concatMap(priceItems ->
+                        priceItems.isEmpty() ? Mono.just(0)
+                                : priceItemRepository.saveAll(priceItems)
+                                .count())
                 .count()
                 .doOnNext(count -> {
                     log.info("stage 6, count: {}", count);
