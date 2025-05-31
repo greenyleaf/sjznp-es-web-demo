@@ -33,7 +33,7 @@ public class QueryService {
 
     public Mono<PageDto> query(String typeName, LocalDate date, String name, boolean exact,
                                Integer page, Integer size) {
-        log.info("query entered");
+        // log.info("query entered");
 
         Criteria criteria = Criteria.and();
 
