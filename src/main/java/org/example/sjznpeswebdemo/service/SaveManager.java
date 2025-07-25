@@ -11,6 +11,7 @@ import reactor.core.publisher.Mono;
 
 @Service
 @Slf4j
+@Deprecated
 public class SaveManager {
     private final PricePageRepository pricePageRepository;
     private final PriceItemRepository priceItemRepository;
@@ -24,6 +25,7 @@ public class SaveManager {
         log.info("save entered");
 
         try {
+            // 没有处理 data es 不能处保存 flux 的问题。
             return pricePageRepository
                     .saveAll(pricePageFlux)
                     .doOnNext(pricePage -> log.info("stage 1"))

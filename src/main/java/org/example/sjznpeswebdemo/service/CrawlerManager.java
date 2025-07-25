@@ -41,6 +41,9 @@ public class CrawlerManager {
         return 1;
     }
 
+    /**
+     * 价格列表页面的第一页
+     */
     Mono<PricePage> crawlOnePage(LocalDate date, Integer pageNo, Integer pageCount) {
         return webClient
                 .get()
@@ -63,6 +66,9 @@ public class CrawlerManager {
                                 }));
     }
 
+    /**
+     * 价格列表页面的第一页之后的页面
+     */
     Flux<PricePage> crawlAllSubPage(LocalDate date, Integer pageCount) {
         return Flux.range(2, pageCount - 1)
                 .flatMapSequential(integer -> crawlOnePage(date, integer, pageCount), 5);

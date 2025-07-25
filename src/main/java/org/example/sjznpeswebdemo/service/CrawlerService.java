@@ -26,7 +26,7 @@ public class CrawlerService {
     private final PricePageRepository pricePageRepository;
     private final PriceItemRepository priceItemRepository;
 
-    public CrawlerService(CrawlerManager crawlerManager, PricePageRepository pricePageRepository, SaveManager saveManager, ReactiveElasticsearchOperations reactiveElasticsearchOperations, PriceItemRepository priceItemRepository) {
+    public CrawlerService(CrawlerManager crawlerManager, PricePageRepository pricePageRepository, ReactiveElasticsearchOperations reactiveElasticsearchOperations, PriceItemRepository priceItemRepository) {
         this.crawlerManager = crawlerManager;
         this.pricePageRepository = pricePageRepository;
         this.priceItemRepository = priceItemRepository;
